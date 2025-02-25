@@ -5,47 +5,34 @@
  * Events API - v1
  * OpenAPI spec version: v3
  */
-export interface ApiResponseError {
-  detail?: string
-}
-export interface UserRequestDTO extends ApiResponseError {
+
+import type { ApiResponse } from '@/domain/entities/api-response.interface'
+import type { Event } from '@/domain/entities/event.interface'
+
+export interface UserRequestDTO extends ApiResponse {
   name?: string
   email?: string
 }
 
-export interface SubscriptionResponseDTO extends ApiResponseError {
+export interface SubscriptionResponseDTO extends ApiResponse {
   subscriptionNumber?: number
   designation?: string
 }
 
-export interface Event extends ApiResponseError {
-  eventId?: number
-  title?: string
-  prettyName?: string
-  location?: string
-  price?: number
-  startDate?: string
-  endDate?: string
-  startTime?: LocalTime
-  endTime?: LocalTime
-  about?: string
-  eventType?: string
-}
-
-export interface LocalTime extends ApiResponseError {
+export interface LocalTime extends ApiResponse {
   hour?: number
   minute?: number
   second?: number
   nano?: number
 }
 
-export interface SubscriptionRankingItem extends ApiResponseError {
+export interface SubscriptionRankingItem extends ApiResponse {
   userId?: number
   name?: string
   subscribers?: number
 }
 
-export interface SubscriptionRankingByUser extends ApiResponseError {
+export interface SubscriptionRankingByUser extends ApiResponse {
   position?: number
   indicatorInformation?: SubscriptionRankingItem
 }

@@ -12,7 +12,7 @@ interface EventPageProps {
   }>
 }
 
-export default async function Home(props: EventPageProps) {
+export default async function HomeEvent(props: EventPageProps) {
   const { eventPrettyName } = await props.params
 
   const event = await getEventByPrettyName(eventPrettyName)
