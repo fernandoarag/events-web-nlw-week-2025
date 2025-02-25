@@ -1,0 +1,5 @@
+export enum EventTypeEnum {
+  ONLINE_AO_VIVO = 'AO VIVO',
+  ONLINE_GRAVADO = 'GRAVADO',
+  PRESENCIAL = 'PRESENCIAL',
+}
