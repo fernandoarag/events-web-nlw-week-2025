@@ -1,13 +1,9 @@
 'use client'
 
 import { createNewSubscription1 } from '@/infrastructure/http/api'
-import {
-  InputField,
-  InputIcon,
-  InputRoot,
-} from '@/presentation/components/Input'
-import { Button } from '@/presentation/components/button'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from 'components/button'
+import { InputField, InputIcon, InputRoot } from 'components/input-default'
 import { ArrowRight, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { ComponentProps } from 'react'

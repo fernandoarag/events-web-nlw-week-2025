@@ -1,16 +1,7 @@
-import type { LocalTime } from '@/infrastructure/http/api'
 import type { ApiResponse } from './api-response.interface'
+import type { EventContent } from './event-content.interface'
+import type { Pageable } from './pageable.interface'
 
-export interface Event extends ApiResponse {
-  eventId?: number
-  title?: string
-  prettyName?: string
-  location?: string
-  price?: number
-  startDate?: string
-  endDate?: string
-  startTime?: LocalTime
-  endTime?: LocalTime
-  about?: string
-  eventType?: string
+export interface Event extends ApiResponse, Pageable {
+  content: EventContent[]
 }
