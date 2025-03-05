@@ -7,6 +7,7 @@ import type { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { ComponentProps } from 'react'
 import { useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { EventCard } from './event-card'
 import {
   Pagination,
@@ -20,7 +21,7 @@ import {
 import SidebarDefault from './sidebar-default'
 
 interface EventCardProps extends ComponentProps<'div'> {
-  events?: EventContent[]
+  events: EventContent[]
   pageable?: Pageable
   eventFilters?: EventFilter
 }
@@ -81,7 +82,7 @@ export default function Events({
       buttons.unshift(
         <PaginationItem key={currentPreviousPage}>
           <PaginationButton
-            onClick={() => handlePageChange(currentPreviousPage + 1)}
+            onClick={() => handlePageChange(currentPreviousPage + 1, filters)}
           >
             {currentPreviousPage}
           </PaginationButton>
@@ -103,7 +104,7 @@ export default function Events({
     for (let x = page; ++x < (pageable?.totalPages ?? 0) && nextButtons < 2; ) {
       buttons.push(
         <PaginationItem key={x}>
-          <PaginationButton onClick={() => handlePageChange(x)}>
+          <PaginationButton onClick={() => handlePageChange(x, filters)}>
             {x}
           </PaginationButton>
         </PaginationItem>
@@ -123,7 +124,7 @@ export default function Events({
       buttons.push(
         <PaginationItem key={pageable?.totalPages ?? 0}>
           <PaginationButton
-            onClick={() => handlePageChange(pageable?.totalPages ?? 0)}
+            onClick={() => handlePageChange(pageable?.totalPages ?? 0, filters)}
             isActive={page === (pageable?.totalPages ?? 0)}
           >
             {pageable?.totalPages ?? 0}
@@ -140,7 +141,7 @@ export default function Events({
       )
       buttons.unshift(
         <PaginationItem key={1}>
-          <PaginationButton onClick={() => handlePageChange(1)}>
+          <PaginationButton onClick={() => handlePageChange(1, filters)}>
             1
           </PaginationButton>
         </PaginationItem>
@@ -176,19 +177,25 @@ export default function Events({
         <div className="absolute bottom-[-4rem] left-0 w-full flex justify-center items-center gap-4">
           <Pagination>
             <PaginationContent>
-              {page > 1 && (
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(page - 1)}
-                  />
-                </PaginationItem>
-              )}
+              <PaginationItem>
+                <PaginationPrevious
+                  className={
+                    page === 1 ? 'pointer-events-none' : 'cursor-pointer'
+                  }
+                  onClick={() => handlePageChange(page - 1, filters)}
+                />
+              </PaginationItem>
               {generatePageButtons()}
-              {page < (pageable?.totalPages ?? 0) && (
-                <PaginationItem>
-                  <PaginationNext onClick={() => handlePageChange(page + 1)} />
-                </PaginationItem>
-              )}
+              <PaginationItem>
+                <PaginationNext
+                  className={
+                    page >= (pageable?.totalPages ?? 0)
+                      ? 'pointer-events-none'
+                      : 'cursor-pointer'
+                  }
+                  onClick={() => handlePageChange(page + 1, filters)}
+                />
+              </PaginationItem>
             </PaginationContent>
           </Pagination>
         </div>

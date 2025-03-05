@@ -95,7 +95,6 @@ export const createNewSubscription1 = async (
 export const getAllEventsUrl = (eventFilter: EventFilter) => {
   let pathParam = '?'
   const eventTypes = eventFilter?.eventType
-  console.log('getAllEventsUrl: ', eventFilter?.eventType)
 
   if ((eventTypes?.length ?? 0) >= 1) {
     for (const type of eventTypes ?? []) {
@@ -108,7 +107,6 @@ export const getAllEventsUrl = (eventFilter: EventFilter) => {
       pathParam += `${key}=${value.toString()}&`
     }
   }
-  console.log('pathParam', pathParam)
   return `http://localhost:8080/api/v1/events${pathParam}`
 }
 

@@ -1,3 +1,5 @@
+'use server'
+
 import Events from '@/components/ui/events'
 import type { Event } from '@/domain/entities/event.interface'
 import type { EventTypeEnum } from '@/domain/enums/type-event.enum'
@@ -13,14 +15,16 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams = {} }: HomeProps) {
+  const { eventType, page, size, sort } = await searchParams
+
   const eventFilters = {
-    page: Number(searchParams?.page) || 1,
-    size: Number(searchParams?.size) || 4,
-    sort: searchParams.sort || 'startDate',
-    eventType: Array.isArray(searchParams.eventType)
-      ? (searchParams.eventType as EventTypeEnum[])
-      : searchParams.eventType
-        ? [searchParams.eventType as EventTypeEnum]
+    page: Number(page) || 1,
+    size: Number(size) || 4,
+    sort: sort || 'startDate',
+    eventType: Array.isArray(eventType)
+      ? (eventType as EventTypeEnum[])
+      : eventType
+        ? [eventType as EventTypeEnum]
         : [],
   }
 

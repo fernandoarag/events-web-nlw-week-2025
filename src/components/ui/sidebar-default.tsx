@@ -32,9 +32,10 @@ const SidebarDefault = ({
   const typeLabel = EventTypeLabelEnum
   const handleCheckboxChange = (type: string) => {
     const indice = filters.eventType.findIndex(e => e === type)
-    if (indice >= 0) filters.eventType.splice(indice, 1)
-    else filters.eventType.push(type as EventTypeEnum)
-    console.log('indice: ', indice)
+
+    indice >= 0
+      ? filters.eventType.splice(indice, 1)
+      : filters.eventType.push(type as EventTypeEnum)
 
     setFilters(prev => ({
       ...prev,
