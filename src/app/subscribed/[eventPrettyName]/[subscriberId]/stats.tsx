@@ -18,8 +18,6 @@ export async function Stats({ subscriberId, eventPrettyName }: StatsProps) {
   await updateHints(eventPrettyName, +subscriberId)
   const hints = await getHints(eventPrettyName, +subscriberId)
 
-  // console.log(res)
-
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <div className="relative bg-gray-700 border border-gray-600 px-4 py-7 flex flex-col items-center justify-center gap-1 rounded-xl">

@@ -8,14 +8,18 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { EventTypeLabelEnum } from '@/domain/enums/type-event-label.enum'
 import { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import { twMerge } from 'tailwind-merge'
 
+interface FilterProps {
+  eventType: EventTypeEnum[]
+  sortBy: string
+}
+
 interface SidebarProps {
-  filters: { types: string[]; mode: string; sortBy: string }
-  setFilters: React.Dispatch<
-    React.SetStateAction<{ types: string[]; mode: string; sortBy: string }>
-  >
+  filters: FilterProps
+  setFilters: React.Dispatch<React.SetStateAction<FilterProps>>
   className?: string
 }
 
@@ -25,14 +29,17 @@ const SidebarDefault = ({
   className,
   ...props
 }: SidebarProps) => {
+  const typeLabel = EventTypeLabelEnum
   const handleCheckboxChange = (type: string) => {
+    const indice = filters.eventType.findIndex(e => e === type)
+    if (indice >= 0) filters.eventType.splice(indice, 1)
+    else filters.eventType.push(type as EventTypeEnum)
+    console.log('indice: ', indice)
+
     setFilters(prev => ({
       ...prev,
-      types: prev.types.includes(type)
-        ? prev.types.filter(t => t !== type)
-        : [...prev.types, type],
+      eventType: prev.eventType,
     }))
-    console.log(filters)
   }
 
   return (
@@ -47,17 +54,20 @@ const SidebarDefault = ({
         <h2 className="text-2xl font-semibold mb-4">Filtragem</h2>
       </div>
       <div className="flex flex-col">
-        <Label className="sidebar-filter-title text-base">Tipo de Evento</Label>
+        <Label className="sidebar-filter-title text-base font-semibold">
+          Tipo de Evento
+        </Label>
 
         {Object.values(EventTypeEnum).map(type => (
           <div key={type} className="flex items-center gap-2 mb-1">
             <Checkbox
               id={type}
-              checked={filters.types.includes(type)}
+              checked={filters.eventType.indexOf(type) >= 0}
               onCheckedChange={() => handleCheckboxChange(type)}
             />
             <Label htmlFor={type} className="text-base">
-              {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}
+              {typeLabel[type].charAt(0).toUpperCase() +
+                typeLabel[type].slice(1).toLowerCase() || ''}
             </Label>
           </div>
         ))}
@@ -66,33 +76,14 @@ const SidebarDefault = ({
       <Separator className="my-5" />
 
       <div className="flex flex-col">
-        <Label className="sidebar-filter-title text-base">Modalidade</Label>
-        <Select
-          onValueChange={value =>
-            setFilters(prev => ({ ...prev, mode: value }))
-          }
-          defaultValue="all"
-        >
-          <SelectTrigger className="w-full p-3 rounded-lg border-gray-300 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-base">
-            <SelectValue placeholder="Selecione a Modalidade" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="Online">Online</SelectItem>
-            <SelectItem value="Presencial">Presencial</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Separator className="my-5" />
-
-      <div className="flex flex-col">
-        <Label className="sidebar-filter-title text-base">Ordenar por</Label>
+        <Label className="sidebar-filter-title text-base font-semibold">
+          Ordenar por
+        </Label>
         <Select
           onValueChange={value =>
             setFilters(prev => ({ ...prev, sortBy: value }))
           }
-          defaultValue="date"
+          defaultValue={filters.sortBy}
         >
           <SelectTrigger className="w-full p-3 rounded-lg border-gray-300 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-base">
             <SelectValue
@@ -100,7 +91,7 @@ const SidebarDefault = ({
             />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="date">Data</SelectItem>
+            <SelectItem value="startDate">Data</SelectItem>
             <SelectItem value="price">Preço</SelectItem>
           </SelectContent>
         </Select>

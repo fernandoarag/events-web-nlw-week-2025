@@ -7,6 +7,8 @@
  */
 
 import type { ApiResponse } from '@/domain/entities/api-response.interface'
+import type { EventFilter } from '@/domain/entities/classes/event-filter.class'
+import type { EventContent } from '@/domain/entities/event-content.class'
 import type { Event } from '@/domain/entities/event.interface'
 
 export interface UserRequestDTO extends ApiResponse {
@@ -90,24 +92,31 @@ export const createNewSubscription1 = async (
   return data
 }
 
-export const getGetAllEventsUrl = (page?: number, size?: number) => {
-  let pathParam = ''
-  if (page && size) {
-    pathParam = `?page=${page.toString()}&size=${size.toString()}`
-  } else if (size) {
-    pathParam = `?size=${size.toString()}`
-  } else if (page) {
-    pathParam = `?page=${page.toString()}`
+export const getAllEventsUrl = (eventFilter: EventFilter) => {
+  let pathParam = '?'
+  const eventTypes = eventFilter?.eventType
+  console.log('getAllEventsUrl: ', eventFilter?.eventType)
+
+  if ((eventTypes?.length ?? 0) >= 1) {
+    for (const type of eventTypes ?? []) {
+      pathParam += `eventType=${type}&`
+    }
   }
+
+  for (const [key, value] of Object.entries(eventFilter)) {
+    if (value && key !== 'eventType') {
+      pathParam += `${key}=${value.toString()}&`
+    }
+  }
+  console.log('pathParam', pathParam)
   return `http://localhost:8080/api/v1/events${pathParam}`
 }
 
 export const getAllEvents = async (
-  page?: number,
-  size?: number,
+  eventFilter: EventFilter,
   options?: RequestInit
 ): Promise<Event> => {
-  const res = await fetch(getGetAllEventsUrl(page, size), {
+  const res = await fetch(getAllEventsUrl(eventFilter), {
     ...options,
     method: 'GET',
   })
@@ -231,14 +240,14 @@ export const getGetEventByPrettyNameUrl = (prettyName: string) => {
 export const getEventByPrettyName = async (
   prettyName: string,
   options?: RequestInit
-): Promise<Event> => {
+): Promise<EventContent> => {
   const res = await fetch(getGetEventByPrettyNameUrl(prettyName), {
     ...options,
     method: 'GET',
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: Event = body ? JSON.parse(body) : {}
+  const data: EventContent = body ? JSON.parse(body) : {}
 
   return data
 }

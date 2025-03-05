@@ -1,17 +1,30 @@
-import EventFilter from '@/components/ui/event-filter'
+import Events from '@/components/ui/events'
 import type { Event } from '@/domain/entities/event.interface'
+import type { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import { getAllEvents } from '@/infrastructure/http/api'
 
 interface HomeProps {
-  searchParams: { page?: string }
+  searchParams: {
+    page?: string
+    size?: string
+    eventType?: EventTypeEnum[]
+    sort?: string
+  }
 }
 
 export default async function Home({ searchParams = {} }: HomeProps) {
-  const page = Number(searchParams?.page) || 1
-  const pageSize = 4
+  const eventFilters = {
+    page: Number(searchParams?.page) || 1,
+    size: Number(searchParams?.size) || 4,
+    sort: searchParams.sort || 'startDate',
+    eventType: Array.isArray(searchParams.eventType)
+      ? (searchParams.eventType as EventTypeEnum[])
+      : searchParams.eventType
+        ? [searchParams.eventType as EventTypeEnum]
+        : [],
+  }
 
-  const events: Event = await getAllEvents(page, pageSize)
-  console.log('events: ', events)
+  const events: Event = await getAllEvents(eventFilters)
 
   return (
     <div className="min-h-dvh flex flex-col justify-center gap-16 my-20">
@@ -21,7 +34,15 @@ export default async function Home({ searchParams = {} }: HomeProps) {
         </h1>
       </div>
 
-      <EventFilter events={events.content} totalPages={events.totalPages} />
+      <Events
+        events={events.content}
+        pageable={{
+          totalPages: events.totalPages,
+          totalElements: events.totalElements,
+          pageSize: events.pageSize,
+          pageNumber: events.pageNumber,
+        }}
+      />
     </div>
   )
 }

@@ -1,6 +1,9 @@
 'use client'
 
-import type { EventContent } from '@/domain/entities/event-content.interface'
+import type { EventFilter } from '@/domain/entities/classes/event-filter.class'
+import type { EventContent } from '@/domain/entities/event-content.class'
+import type { Pageable } from '@/domain/entities/pageable.interface'
+import type { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { ComponentProps } from 'react'
 import { useEffect, useState } from 'react'
@@ -18,62 +21,50 @@ import SidebarDefault from './sidebar-default'
 
 interface EventCardProps extends ComponentProps<'div'> {
   events?: EventContent[]
-  totalPages: number
+  pageable?: Pageable
+  eventFilters?: EventFilter
 }
 
-export default function EventFilter({
+interface FilterProps {
+  eventType: EventTypeEnum[]
+  sortBy: string
+}
+
+export default function Events({
   events = [],
-  totalPages = 0,
+  pageable,
+  eventFilters,
   ...props
 }: EventCardProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page')) || 1
+  const initPage = 1
 
-  const [filters, setFilters] = useState<{
-    types: string[]
-    mode: string
-    sortBy: string
-  }>({
-    types: [],
-    mode: 'all',
-    sortBy: 'date',
+  const [filters, setFilters] = useState<FilterProps>({
+    eventType: (searchParams.getAll('eventType') as EventTypeEnum[]) || [],
+    sortBy: searchParams.get('sort') || 'startDate',
   })
 
-  const [filteredEvents, setFilteredEvents] = useState<EventContent[]>([])
-
   useEffect(() => {
-    // Filtra e ordena os eventos conforme os filtros aplicados
-    const filtered = events
-      .filter(event =>
-        filters.types.length
-          ? filters.types.includes(event.eventType ?? '')
-          : true
-      )
-      .filter(event =>
-        filters.mode !== 'all'
-          ? filters.mode === 'Online'
-            ? (event.eventType ?? '').includes('ONLINE')
-            : (event.eventType ?? '') === 'PRESENCIAL'
-          : true
-      )
-      .sort((a, b) =>
-        filters.sortBy === 'price'
-          ? (a.price || 0) - (b.price || 0)
-          : new Date(a.startDate ?? '').getTime() -
-            new Date(b.startDate ?? '').getTime()
-      )
-
-    setFilteredEvents(filtered)
-  }, [events, filters])
+    handlePageChange(initPage, filters)
+  }, [filters])
 
   // Função para mudar de página
-  const handlePageChange = (fromToPage: number) => {
-    if (fromToPage > 0 && fromToPage <= totalPages) {
+  const handlePageChange = (fromToPage: number, filters?: FilterProps) => {
+    if (fromToPage > 0 && fromToPage <= (pageable?.totalPages ?? 0)) {
       const params = new URLSearchParams(searchParams.toString())
       params.set('page', String(fromToPage))
       params.set('size', '4')
-      router.push(`?${params.toString()}/#eventsFilter`, { scroll: true })
+
+      // Atualiza os eventTypes corretamente
+      params.delete('eventType')
+      for (const type of filters?.eventType ?? []) {
+        params.append('eventType', type)
+      }
+
+      params.set('sort', filters?.sortBy || 'startDate')
+      router.push(`?${params.toString()}#eventsFilter`, { scroll: true })
     }
   }
 
@@ -100,7 +91,7 @@ export default function EventFilter({
       previousButtons++
     }
 
-    if (page < totalPages) {
+    if (page < (pageable?.totalPages ?? 0)) {
       buttons.push(
         <PaginationItem key={page}>
           <PaginationButton isActive>{page}</PaginationButton>
@@ -109,7 +100,7 @@ export default function EventFilter({
     }
 
     let nextButtons = 0
-    for (let x = page; ++x < totalPages && nextButtons < 2; ) {
+    for (let x = page; ++x < (pageable?.totalPages ?? 0) && nextButtons < 2; ) {
       buttons.push(
         <PaginationItem key={x}>
           <PaginationButton onClick={() => handlePageChange(x)}>
@@ -120,7 +111,7 @@ export default function EventFilter({
       nextButtons++
     }
 
-    if (page + 3 < totalPages) {
+    if (page + 3 < (pageable?.totalPages ?? 0)) {
       buttons.push(
         <PaginationItem key={page + 3}>
           <PaginationEllipsis>...</PaginationEllipsis>
@@ -128,18 +119,34 @@ export default function EventFilter({
       )
     }
 
-    if (totalPages) {
+    if (pageable?.totalPages ?? 0) {
       buttons.push(
-        <PaginationItem key={totalPages}>
+        <PaginationItem key={pageable?.totalPages ?? 0}>
           <PaginationButton
-            onClick={() => handlePageChange(totalPages)}
-            isActive={page === totalPages}
+            onClick={() => handlePageChange(pageable?.totalPages ?? 0)}
+            isActive={page === (pageable?.totalPages ?? 0)}
           >
-            {totalPages}
+            {pageable?.totalPages ?? 0}
           </PaginationButton>
         </PaginationItem>
       )
     }
+
+    if (page >= 4) {
+      buttons.unshift(
+        <PaginationItem key={page + 999}>
+          <PaginationEllipsis>...</PaginationEllipsis>
+        </PaginationItem>
+      )
+      buttons.unshift(
+        <PaginationItem key={1}>
+          <PaginationButton onClick={() => handlePageChange(1)}>
+            1
+          </PaginationButton>
+        </PaginationItem>
+      )
+    }
+
     return buttons
   }
 
@@ -155,11 +162,15 @@ export default function EventFilter({
         className="min-h-[764px]"
       />
 
-      <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
-          {filteredEvents.map(event => (
-            <EventCard key={event.prettyName} event={event} />
-          ))}
+      <div className="relative bg-gray-700/75 p-2 rounded-xl">
+        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-2 w-full">
+          {events?.length > 0 ? (
+            events.map(event => (
+              <EventCard key={event.prettyName} event={event} />
+            ))
+          ) : (
+            <></>
+          )}
         </div>
 
         <div className="absolute bottom-[-4rem] left-0 w-full flex justify-center items-center gap-4">
@@ -173,7 +184,7 @@ export default function EventFilter({
                 </PaginationItem>
               )}
               {generatePageButtons()}
-              {page < totalPages && (
+              {page < (pageable?.totalPages ?? 0) && (
                 <PaginationItem>
                   <PaginationNext onClick={() => handlePageChange(page + 1)} />
                 </PaginationItem>

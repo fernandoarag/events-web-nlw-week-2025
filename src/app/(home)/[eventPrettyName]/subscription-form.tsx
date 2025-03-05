@@ -1,5 +1,6 @@
 'use client'
 
+import { ButtonDefault } from '@/components/ui/button-default'
 import { createNewSubscription1 } from '@/infrastructure/http/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from 'components/button'
@@ -8,6 +9,7 @@ import { ArrowRight, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { ComponentProps } from 'react'
 import { useForm } from 'react-hook-form'
+import { twMerge } from 'tailwind-merge'
 import { z } from 'zod'
 
 const subscriptionSchema = z.object({
@@ -24,9 +26,14 @@ type SubscriptionSchema = z.infer<typeof subscriptionSchema>
 
 interface FormProps extends ComponentProps<'form'> {
   eventPrettyName?: string
+  className?: string
 }
 
-export function SubscriptionForm({ eventPrettyName }: FormProps) {
+export function SubscriptionForm({
+  eventPrettyName,
+  className,
+  ...props
+}: FormProps) {
   const router = useRouter()
   // const searchParams = useSearchParams()
 
@@ -42,7 +49,6 @@ export function SubscriptionForm({ eventPrettyName }: FormProps) {
 
   async function onSubscribe({ email, prettyName, name }: SubscriptionSchema) {
     try {
-      console.log('Pretty Name: ', prettyName)
       const res = await createNewSubscription1(prettyName, {
         name: name.trim(),
         email: email.trim(),
@@ -61,7 +67,11 @@ export function SubscriptionForm({ eventPrettyName }: FormProps) {
   return (
     <form
       onSubmit={handleSubmit(onSubscribe)}
-      className="bg-gray-700 border border-gray-600 rounded-2xl p-8 space-y-6 w-full md:max-w-[440px]"
+      className={twMerge(
+        'bg-gray-700 border border-gray-600 rounded-2xl p-8 space-y-6 w-full md:max-w-[440px]',
+        className
+      )}
+      {...props}
     >
       <h2 className="font-heading font-semibold text-gray-200 text-xl">
         Inscrição
@@ -118,10 +128,10 @@ export function SubscriptionForm({ eventPrettyName }: FormProps) {
         )}
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
+      <ButtonDefault type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Enviando...' : 'Confirmar'}
         <ArrowRight />
-      </Button>
+      </ButtonDefault>
     </form>
   )
 }

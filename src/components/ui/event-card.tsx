@@ -1,4 +1,5 @@
-import type { EventContent } from '@/domain/entities/event-content.interface'
+import type { EventContent } from '@/domain/entities/event-content.class'
+import { EventTypeLabelEnum } from '@/domain/enums/type-event-label.enum'
 import { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import { Radio, User, Video } from 'lucide-react'
 import Link from 'next/link'
@@ -13,13 +14,13 @@ export function EventCard({ event, className, ...props }: EventCardProps) {
   const eventNameBlue = event?.title?.split(' ')[0]
   const eventName = event?.title?.split(' ').slice(1).join(' ')
   const eventType =
-    EventTypeEnum[event?.eventType as keyof typeof EventTypeEnum]
+    EventTypeLabelEnum[event?.eventType as keyof typeof EventTypeLabelEnum]
 
   return (
     <Link
       href={`/${event?.prettyName}`}
       className={twMerge(
-        'w-full bg-gray-700 border border-gray-600 rounded-2xl p-8 space-y-6  transition-all duration-300 shadow-blue/25 hover:shadow-lg hover:scale-101 max-h-[100%] min-h-[370px]',
+        'w-full bg-gray-800/80 border border-gray-600 rounded-2xl p-8 space-y-6  transition-all duration-300 shadow-blue/25 hover:shadow-lg hover:scale-101 max-h-[100%] min-h-[370px] z-50',
         className
       )}
       {...props}
@@ -44,28 +45,55 @@ export function EventCard({ event, className, ...props }: EventCardProps) {
           {eventType}
         </span>
       </div>
-      <p className="relative text-gray-300 leading-relaxed text-sm md:text-base max-h-[calc(100%-102px)] h-full">
-        {event?.about && event?.about?.length > 325
-          ? `${event?.about?.slice(0, 325)}...`
-          : event?.about}
-        <br />
-        <br />
-        <span className="absolute bottom-0 left-0">
-          Dias {event?.startDate?.split('-')[2] || ''} a{' '}
-          {event?.endDate?.split('-')[2] || ''} de março | Das{' '}
-          {event?.startTime?.toString().split(':')[0] || ''}h às{' '}
-          {event?.endTime?.toString().split(':')[0] || ''}h | {(() => {
-            switch (true) {
-              case event?.eventType === 'ONLINE_AO_VIVO':
-              case event?.eventType === 'ONLINE_GRAVADO':
-                return 'Online'
-              default:
-                return 'Presencial'
-            }
-          })()} |{' '}
-          {event?.price === 0 ? 'Gratuito' : `R$ ${event?.price?.toFixed(2)}`}
-        </span>
-      </p>
+      <div className="relative max-h-[calc(100%-102px)] h-full flex flex-col justify-between items-start">
+        <p className=" text-gray-300 leading-relaxed text-sm md:text-base ">
+          {event?.about && event?.about?.length > 325
+            ? `${event?.about?.slice(0, 170)}...`
+            : event?.about}
+        </p>
+
+        <div className="flex flex-row justify-between flex-wrap gap-4">
+          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+            <h4 className="font-semibold text-sm">Data:</h4>
+            <span className="text-sm">
+              {event?.startDate?.split('-')[2] || ''} a{' '}
+              {event?.endDate?.split('-')[2] || ''} de{' '}
+              {new Date(event?.startDate || '').toLocaleString('pt-BR', {
+                month: 'long',
+              })}
+            </span>
+          </div>
+          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+            <h4 className="font-semibold text-sm">Horário:</h4>
+            <span className="text-sm">
+              {event?.startTime?.toString().split(':')[0] || ''}h às{' '}
+              {event?.endTime?.toString().split(':')[0] || ''}hrs
+            </span>
+          </div>
+          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+            <h4 className="font-semibold text-sm">Modalidade:</h4>
+            <span className="text-sm">
+              {(() => {
+                switch (true) {
+                  case event?.eventType === 'ONLINE_AO_VIVO':
+                  case event?.eventType === 'ONLINE_GRAVADO':
+                    return 'Online'
+                  default:
+                    return 'Presencial'
+                }
+              })()}
+            </span>
+          </div>
+          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+            <h4 className="font-semibold text-sm">Preço:</h4>
+            <span className="text-sm">
+              {event?.price === 0
+                ? 'Gratuito'
+                : `R$ ${event?.price?.toFixed(2)}`}
+            </span>
+          </div>
+        </div>
+      </div>
     </Link>
   )
 }

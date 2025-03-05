@@ -56,8 +56,6 @@ const components: { title: string; href: string; description: string }[] = [
 
 export default function Header() {
   const paths = usePathname()
-  const pathNames = paths.split('/').filter(path => path)
-  // console.log('pathNames', pathNames)
 
   return (
     <header className="container flex flex-row justify-start items-center gap-15 my-5">
