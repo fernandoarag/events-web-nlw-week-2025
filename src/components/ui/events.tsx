@@ -29,6 +29,7 @@ interface EventCardProps extends ComponentProps<'div'> {
 interface FilterProps {
   eventType: EventTypeEnum[]
   sortBy: string
+  page?: number
 }
 
 export default function Events({
@@ -40,19 +41,24 @@ export default function Events({
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page')) || 1
-  const initPage = 1
+  const initPage = 0
 
   const [filters, setFilters] = useState<FilterProps>({
     eventType: (searchParams.getAll('eventType') as EventTypeEnum[]) || [],
     sortBy: searchParams.get('sort') || 'startDate',
+    page: searchParams.get('page') ? Number(searchParams.get('page')) : 0,
   })
 
   useEffect(() => {
-    handlePageChange(initPage, filters)
+    handlePageChange(filters.page || 0, filters, 'eventsFilter')
   }, [filters])
 
   // Função para mudar de página
-  const handlePageChange = (fromToPage: number, filters?: FilterProps) => {
+  const handlePageChange = (
+    fromToPage: number,
+    filters?: FilterProps,
+    pageId?: string
+  ) => {
     if (fromToPage > 0 && fromToPage <= (pageable?.totalPages ?? 0)) {
       const params = new URLSearchParams(searchParams.toString())
       params.set('page', String(fromToPage))
@@ -65,7 +71,9 @@ export default function Events({
       }
 
       params.set('sort', filters?.sortBy || 'startDate')
-      router.push(`?${params.toString()}#eventsFilter`, { scroll: true })
+      router.push(`?${params.toString()}${pageId ? `#${pageId}` : ''}`, {
+        scroll: true,
+      })
     }
   }
 
@@ -82,7 +90,9 @@ export default function Events({
       buttons.unshift(
         <PaginationItem key={currentPreviousPage}>
           <PaginationButton
-            onClick={() => handlePageChange(currentPreviousPage + 1, filters)}
+            onClick={() =>
+              handlePageChange(currentPreviousPage + 1, filters, 'eventsFilter')
+            }
           >
             {currentPreviousPage}
           </PaginationButton>
@@ -104,7 +114,9 @@ export default function Events({
     for (let x = page; ++x < (pageable?.totalPages ?? 0) && nextButtons < 2; ) {
       buttons.push(
         <PaginationItem key={x}>
-          <PaginationButton onClick={() => handlePageChange(x, filters)}>
+          <PaginationButton
+            onClick={() => handlePageChange(x, filters, 'eventsFilter')}
+          >
             {x}
           </PaginationButton>
         </PaginationItem>
@@ -124,7 +136,13 @@ export default function Events({
       buttons.push(
         <PaginationItem key={pageable?.totalPages ?? 0}>
           <PaginationButton
-            onClick={() => handlePageChange(pageable?.totalPages ?? 0, filters)}
+            onClick={() =>
+              handlePageChange(
+                pageable?.totalPages ?? 0,
+                filters,
+                'eventsFilter'
+              )
+            }
             isActive={page === (pageable?.totalPages ?? 0)}
           >
             {pageable?.totalPages ?? 0}
@@ -141,7 +159,9 @@ export default function Events({
       )
       buttons.unshift(
         <PaginationItem key={1}>
-          <PaginationButton onClick={() => handlePageChange(1, filters)}>
+          <PaginationButton
+            onClick={() => handlePageChange(1, filters, 'eventsFilter')}
+          >
             1
           </PaginationButton>
         </PaginationItem>
@@ -182,7 +202,9 @@ export default function Events({
                   className={
                     page === 1 ? 'pointer-events-none' : 'cursor-pointer'
                   }
-                  onClick={() => handlePageChange(page - 1, filters)}
+                  onClick={() =>
+                    handlePageChange(page - 1, filters, 'eventsFilter')
+                  }
                 />
               </PaginationItem>
               {generatePageButtons()}
@@ -193,7 +215,9 @@ export default function Events({
                       ? 'pointer-events-none'
                       : 'cursor-pointer'
                   }
-                  onClick={() => handlePageChange(page + 1, filters)}
+                  onClick={() =>
+                    handlePageChange(page + 1, filters, 'eventsFilter')
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

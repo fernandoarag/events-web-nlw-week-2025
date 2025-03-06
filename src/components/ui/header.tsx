@@ -12,7 +12,7 @@ import {
 } from '@radix-ui/react-navigation-menu'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import logo from '../../../public/favicon_fa_white_blue_border_v2.svg'
 import { ButtonDefault } from './button-default'
 
@@ -55,25 +55,34 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 export default function Header() {
-  const paths = usePathname()
-
   return (
-    <header className="container flex flex-row justify-start items-center gap-15 my-5">
+    <header className="container grid grid-cols-[84px_1fr_auto] justify-center items-center gap-15 py-5 w-full">
       <Image src={logo} alt="FA Developer" className="max-h-[150px]" />
 
-      <NavigationMenu className="relative w-full">
+      <NavigationMenu className="relative w-full flex flex-row items-center justify-center gap-8">
         <NavigationMenuList
           data-orientation="vertical"
-          className="relative flex flex-1 items-center justify-center gap-8 max-w-max h-12 z-10"
+          className="relative flex flex-1 items-center justify-center gap-8 max-w-max h-12 z-20"
         >
           <NavigationMenuItem>
+            <Link href="/" legacyBehavior passHref>
+              <NavigationMenuLink className={''}>Home</NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/events" legacyBehavior passHref>
+              <NavigationMenuLink className={''}>Events</NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="navigation-menu-item">
             <NavigationMenuTrigger className="flex flex-row items-center gap-2 cursor-pointer group">
               Getting started{' '}
               <ChevronDown className="size-4 group-data-[state=open]:rotate-180 transition-all duration-300" />
             </NavigationMenuTrigger>
 
-            <NavigationMenuContent className="navigation-menu-content  group-[aria-expanded=true]:bg-red">
-              <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] ">
+            <NavigationMenuContent className="navigation-menu-content ">
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-[.75fr_1.25fr] lg:w-[600px] ">
+                {/* <ul className="grid gap-3 p-4 md:w-[600px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] "> */}
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <a
@@ -122,13 +131,11 @@ export default function Header() {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
-          {/* <NavigationMenuItem className=" top-0 bottom-0 right-0">
+          <NavigationMenuItem>
             <Link href="/docs" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Documentation
-              </NavigationMenuLink>
+              <NavigationMenuLink className={''}>About</NavigationMenuLink>
             </Link>
-          </NavigationMenuItem> */}
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
 

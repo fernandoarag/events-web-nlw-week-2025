@@ -43,13 +43,13 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${oxanium.variable} ${montserrat.variable}`}
+      className={`${oxanium.variable} ${montserrat.variable} overflow-x-hidden`}
       suppressHydrationWarning
     >
-      <body className="bg-gray-900 text-gray-100 antialiased bg-[url(/background.png)] bg-no-repeat bg-top md:bg-right-top">
+      <body className="relative bg-gray-900 text-gray-100 antialiased bg-[url(/background.png)] bg-no-repeat bg-top md:bg-right-top overflow-x-hidden">
         <Header />
 
-        <main className="container">{children}</main>
+        <main>{children}</main>
 
         <Footer />
       </body>

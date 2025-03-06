@@ -16,6 +16,7 @@
   --color-gray-200: #c8d0da;
   --color-gray-300: #95a1b1;
   --color-gray-400: #6f7d90;
+  --color-gray-450: #404040;
   --color-gray-500: #2a313c;
   --color-gray-600: #21252c;
   --color-gray-700: #191d24;
@@ -23,6 +24,7 @@
   --color-gray-900: #0f1216;
 
   --font-heading: var(--font-oxanium);
+  --font-heading-variant: var(--font-inter);
   --font-sans: var(--font-montserrat);
 
   --radius-xl: 0.625rem;
@@ -151,9 +153,21 @@
     @apply relative;
   }
   .navigation-menu-content {
-    @apply absolute top-8 left-0 z-10 bg-black/95 rounded-md;
+    @apply absolute top-8 left-[-200px] z-10 bg-black/95 rounded-md;
   }
   .sidebar-filter-title {
     @apply font-semibold mb-2 text-base;
+  }
+  .section {
+    @apply relative pt-25 pb-25;
+  }
+  .section-md {
+    @apply relative pt-12.5 pb-12.5;
+  }
+  .section-sm {
+    @apply relative pt-8 pb-8;
+  }
+  .text-linear-layout {
+    @apply bg-linear-to-r from-white to-[#767585] bg-clip-text text-transparent;
   }
 }

@@ -15,6 +15,7 @@ import { twMerge } from 'tailwind-merge'
 interface FilterProps {
   eventType: EventTypeEnum[]
   sortBy: string
+  page?: number
 }
 
 interface SidebarProps {
@@ -40,6 +41,7 @@ const SidebarDefault = ({
     setFilters(prev => ({
       ...prev,
       eventType: prev.eventType,
+      page: 1,
     }))
   }
 

@@ -104,18 +104,20 @@ export class EventContent {
     return this.endDate
   }
 
+  getMonthStartDate(): string | undefined {
+    return new Date(this?.getStartDate() || '').toLocaleString('pt-BR', {
+      month: 'long',
+    })
+  }
+
   getEndDay(): string | undefined {
     return this?.getEndDate()?.split('-')[2] || ''
   }
 
-  getMonth(): string | undefined {
-    return (
-      new Date(this?.getStartDate() || '')
-        .toLocaleString('pt-BR', {
-          month: 'short',
-        })
-        .toUpperCase() || ''
-    )
+  getMonthEndDate(): string | undefined {
+    return new Date(this?.getEndDate() || '').toLocaleString('pt-BR', {
+      month: 'long',
+    })
   }
 
   getStartTime(): LocalTime | undefined {
