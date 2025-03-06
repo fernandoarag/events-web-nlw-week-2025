@@ -1,5 +1,6 @@
 import { EventContent } from '@/domain/entities/event-content.class'
 import { EventTypeLabelEnum } from '@/domain/enums/type-event-label.enum'
+import type { EventTypeEnum } from '@/domain/enums/type-event.enum'
 import type { IconName } from 'lucide-react/dynamic'
 import { DynamicIcon } from 'lucide-react/dynamic'
 import Link from 'next/link'
@@ -11,13 +12,9 @@ interface EventCardProps extends ComponentProps<'a'> {
 }
 
 export function EventCard({ event, className, ...props }: EventCardProps) {
+  const typeLabel = EventTypeLabelEnum
   const currentEvent: EventContent = new EventContent()
   currentEvent.constructorByEvent(event as EventContent)
-
-  const eventNameBlue = event?.title?.split(' ')[0]
-  const eventName = event?.title?.split(' ').slice(1).join(' ')
-  const eventType =
-    EventTypeLabelEnum[event?.eventType as keyof typeof EventTypeLabelEnum]
 
   return (
     <Link
@@ -39,33 +36,33 @@ export function EventCard({ event, className, ...props }: EventCardProps) {
             className="size-5"
             name={currentEvent.getIconEventType() as IconName}
           />
-          {currentEvent.getEventTypeEnum()}
+          {typeLabel[currentEvent.getEventTypeEnum() as EventTypeEnum]}
         </span>
       </div>
       <div className="relative max-h-[calc(100%-102px)] h-full flex flex-col justify-between items-start">
-        <p className=" text-gray-300 leading-relaxed text-sm md:text-base ">
-          {currentEvent.getAbout()}
+        <p className=" text-gray-300 leading-relaxed text-sm md:text-base mb-5">
+          {currentEvent.getAbout()?.substring(0, 170)}
         </p>
 
         <div className="flex flex-row justify-between flex-wrap gap-4">
-          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+          <div className="p-2 flex flex-row items-center justify-between flex-2/3 border-gray-200/25 border rounded-md bg-muted/5">
             <h4 className="font-semibold text-sm">Data:</h4>
             <span className="text-sm">
               {currentEvent.getStartDay()}/{currentEvent.getMonthStartDate()} a{' '}
               {currentEvent.getEndDay()}/{currentEvent.getMonthEndDate()}
             </span>
           </div>
-          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+          <div className="p-2 flex flex-row items-center justify-between flex-2/3 border-gray-200/25 border rounded-md bg-muted/5">
             <h4 className="font-semibold text-sm">Horário:</h4>
             <span className="text-sm">
               {currentEvent.getStartHour()} às {currentEvent.getEndHour()}hrs
             </span>
           </div>
-          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+          <div className="p-2 flex flex-row items-center justify-between flex-1 border-gray-200/25 border rounded-md bg-muted/5">
             <h4 className="font-semibold text-sm">Modalidade:</h4>
             <span className="text-sm">{currentEvent.getModalidade()}</span>
           </div>
-          <div className="p-2 flex flex-row items-center justify-between flex-1/3 border-gray-200/25 border rounded-md bg-muted/5">
+          <div className="p-2 flex flex-row items-center justify-between flex-1 border-gray-200/25 border rounded-md bg-muted/5">
             <h4 className="font-semibold text-sm">Preço:</h4>
             <span className="text-sm">{currentEvent.getPrice()}</span>
           </div>
